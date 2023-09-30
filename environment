@@ -1,0 +1,107 @@
+#! /bin/bash
+
+#####################################################################################
+
+export DOCKER_IMAGE='linux-build-nanbield'
+export DOCKER_USER=$(whoami)
+export DOCKER_UUID=$(id -u)
+export DOCKER_UGID=$(id -g)
+export DOCKER_WORKDIR=$(pwd)
+export DOCKER_PARAMS="--user ${DOCKER_USER} -v ${DOCKER_WORKDIR}:/home/${DOCKER_USER}/workspace:Z ${DOCKER_IMAGE}"
+
+export PATH="${DOCKER_WORKDIR}/:${PATH}"
+#####################################################################################
+
+# find docker image and create if missing
+find_image=$(docker images -q ${DOCKER_IMAGE})
+if [ "${find_image}" = "" ]; then
+	docker build --no-cache --build-arg "DOCKER_UUID=${DOCKER_UUID}" --build-arg "DOCKER_UGID=${DOCKER_UGID}" --build-arg "DOCKER_USER=${DOCKER_USER}" -t ${DOCKER_IMAGE} docker
+fi
+
+#####################################################################################
+
+# run docker with bb command
+function job() {
+	docker run ${DOCKER_PARAMS} /home/exec.sh $@
+}
+
+export -f job
+
+#####################################################################################
+
+# run docker with interactive shell and mounted local folder
+function job.exec() {
+	docker run ${DOCKER_PARAMS} $@
+}
+
+export -f job.exec
+
+#####################################################################################
+
+# run docker with interactive shell and mounted local folder
+function job.shell() {
+	docker run -it ${DOCKER_PARAMS} /bin/bash
+}
+
+export -f job.shell
+
+#####################################################################################
+
+# remove all stopped containers
+function job.purge() {
+	find_stop=$(docker ps -aq)
+	if [ ! "${find_stop}" = "" ]; then
+		echo "Purging stopped docker containers:"
+		docker rm $(docker ps -aq)
+	fi
+}
+
+export -f job.purge
+
+#####################################################################################
+
+SUBMODULES="$(cat <<-EOF
+f3ba9c3726ec7b38b557100d8a2d4b6a1446a968,layers/bitbake
+941089fa63e2b38608291251d52a354f0f624926,layers/openembedded-core
+3dd5d208be018f0f676d1adfceb9c22f19ad2ffe,layers/meta-openembedded
+2e3ccdaf309a7271a47a1d95123b62bfd6294e9f,layers/meta-openrc
+aca6d4a9e7c45cb44ac02062c2750cdfa1679cc6,layers/meta-security
+ccddfb1f8b68cf9ab21bd416480f79d44a0a30f4,layers/meta-virtualization
+EOF
+)"
+
+#####################################################################################
+
+function init_submodules() {
+	git submodule init
+	git submodule update --recursive
+}
+
+#####################################################################################
+
+function reset_submodules() {
+	for submodule in ${SUBMODULES}; do
+		IFS=',' read revision location <<< "${submodule}"
+		echo -e "\033[1;32mresetting ${location} to revision ${revision} ...\033[0m"
+
+		pushd ${location} > /dev/null
+			git clean -fxd ./    
+			git reset --hard HEAD
+			git checkout ${revision}
+			
+			local layer_patch=../${location#layers/}.patch
+			if [ -f ${layer_patch} ]; then
+				git apply ${layer_patch}
+			fi
+		popd > /dev/null
+	done
+}
+
+echo
+
+#####################################################################################
+
+init_submodules
+reset_submodules
+
+#####################################################################################

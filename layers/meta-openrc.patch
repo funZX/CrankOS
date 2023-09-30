@@ -1,0 +1,10 @@
+diff --git a/conf/layer.conf b/conf/layer.conf
+index 80d5bc6..d0319c6 100644
+--- a/conf/layer.conf
++++ b/conf/layer.conf
+@@ -33,4 +33,4 @@ BBFILE_PRIORITY_openrc-layer = "7"
+ OPENRC_INITDIR = "${sysconfdir}/init.d"
+ OPENRC_CONFDIR = "${sysconfdir}/conf.d"
+ 
+-LAYERSERIES_COMPAT_openrc-layer = "mickledore"
++LAYERSERIES_COMPAT_openrc-layer = "mickledore nanbield"
