@@ -3,3 +3,4 @@ build/sstate-cache/
 build/tmp*/
 downloads/
 build/bitbake*
+build/swap*

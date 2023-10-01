@@ -67,6 +67,7 @@ f3ba9c3726ec7b38b557100d8a2d4b6a1446a968,layers/bitbake
 2e3ccdaf309a7271a47a1d95123b62bfd6294e9f,layers/meta-openrc
 aca6d4a9e7c45cb44ac02062c2750cdfa1679cc6,layers/meta-security
 ccddfb1f8b68cf9ab21bd416480f79d44a0a30f4,layers/meta-virtualization
+482d864b8f1af84915ed6a9641e80af4e49a1f63,layers/meta-raspberrypi
 EOF
 )"
 
