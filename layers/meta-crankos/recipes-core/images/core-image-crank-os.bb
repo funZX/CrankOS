@@ -2,6 +2,7 @@ require include/core-image-crank-os.inc
 
 SUMMARY = "CrankOS Minimal Image"
 
+EXTRA_IMAGE_FEATURES = "package-management debug-tweaks tools-profile tools-debug"
 IMAGE_FEATURES:append = " x11 weston"
 
 IMAGE_INSTALL:append = " \
@@ -26,6 +27,7 @@ IMAGE_INSTALL:append = " \
     psmisc \
     util-linux \
     openssh \
+    gdb \
     sudo \
     python3 \
 \
