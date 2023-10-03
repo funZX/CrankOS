@@ -1,5 +1,5 @@
 IMAGE_DEPENDS = "virtual/kernel"
-IMAGE_FSTYPES = "tar.gz"
+IMAGE_FSTYPES = "tar.gz ext4"
 LICENSE = "MIT"
 
 inherit core-image

@@ -1,6 +1,10 @@
 #! /bin/bash
 
 #####################################################################################
+function info () { echo -e "\033[1;32m$@\033[0m"; }
+function warn () { echo -e "\033[1;33m$@\033[0m"; }
+function die  () { echo -e "\033[0;31m$*\033[0m"; exit 1; }
+#####################################################################################
 
 export DOCKER_IMAGE='linux-build-nanbield'
 export DOCKER_USER=$(whoami)
@@ -15,48 +19,45 @@ export PATH="${DOCKER_WORKDIR}/:${PATH}"
 # find docker image and create if missing
 find_image=$(docker images -q ${DOCKER_IMAGE})
 if [ "${find_image}" = "" ]; then
-	docker build --no-cache --build-arg "DOCKER_UUID=${DOCKER_UUID}" --build-arg "DOCKER_UGID=${DOCKER_UGID}" --build-arg "DOCKER_USER=${DOCKER_USER}" -t ${DOCKER_IMAGE} docker
+	docker build --build-arg "DOCKER_UUID=${DOCKER_UUID}" --build-arg "DOCKER_UGID=${DOCKER_UGID}" --build-arg "DOCKER_USER=${DOCKER_USER}" -t ${DOCKER_IMAGE} docker
 fi
 
 #####################################################################################
 
 # run docker with bb command
-function job() {
+function bb.run() {
 	docker run ${DOCKER_PARAMS} /home/exec.sh $@
 }
 
-export -f job
+export -f bb.run
 
 #####################################################################################
 
 # run docker with interactive shell and mounted local folder
-function job.exec() {
+function bb.exec() {
 	docker run ${DOCKER_PARAMS} $@
 }
 
-export -f job.exec
+export -f bb.exec
 
 #####################################################################################
 
 # run docker with interactive shell and mounted local folder
-function job.shell() {
+function bb.shell() {
 	docker run -it ${DOCKER_PARAMS} /bin/bash
 }
 
-export -f job.shell
+export -f bb.shell
 
 #####################################################################################
 
 # remove all stopped containers
-function job.purge() {
+function bb.purge() {
 	find_stop=$(docker ps -aq)
-	if [ ! "${find_stop}" = "" ]; then
-		echo "Purging stopped docker containers:"
-		docker rm $(docker ps -aq)
-	fi
+	[ ! "${find_stop}" = "" ] && docker rm $(docker ps -aq)
 }
 
-export -f job.purge
+export -f bb.purge
 
 #####################################################################################
 
@@ -83,7 +84,7 @@ function init_submodules() {
 function reset_submodules() {
 	for submodule in ${SUBMODULES}; do
 		IFS=',' read revision location <<< "${submodule}"
-		echo -e "\033[1;32mresetting ${location} to revision ${revision} ...\033[0m"
+		info "RESET ${location} to REVISION ${revision}"
 
 		pushd ${location} > /dev/null
 			git clean -fxd ./    
@@ -91,14 +92,10 @@ function reset_submodules() {
 			git checkout ${revision}
 			
 			local layer_patch=../${location#layers/}.patch
-			if [ -f ${layer_patch} ]; then
-				git apply ${layer_patch}
-			fi
+			[ -f ${layer_patch} ] && git apply ${layer_patch}
 		popd > /dev/null
 	done
 }
-
-echo
 
 #####################################################################################
 

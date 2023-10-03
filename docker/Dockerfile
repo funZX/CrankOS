@@ -19,8 +19,8 @@ ARG DOCKER_USER=ubuntu
 ARG DOCKER_UUID=1001
 ARG DOCKER_UGID=1001
 RUN groupadd -g ${DOCKER_UGID} ${DOCKER_USER} && \
-    useradd -g ${DOCKER_UGID} -m -s /bin/bash -u ${DOCKER_UUID} ${DOCKER_USER}
-
+    useradd -m -g ${DOCKER_UGID} -s /bin/bash -u ${DOCKER_UUID} ${DOCKER_USER}
+    
 RUN echo 'root:docker' | chpasswd
 USER ${DOCKER_USER}
 

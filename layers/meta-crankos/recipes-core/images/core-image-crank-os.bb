@@ -9,5 +9,27 @@ IMAGE_INSTALL:append = " \
     weston-xwayland \
     buildah \
     podman \
+\
+    bash \
+    coreutils \
+    iproute2 \
+    iproute2-tc \
+    iproute2-ss \
+    iputils \
+    dhcpcd \
+    ifplugd \
+    resolvconf \
+    kmod \
+    net-tools \
+    iptraf \
+    procps \
+    psmisc \
+    util-linux \
+    openssh \
+    sudo \
+    python3 \
+\
+    icu \
+    tzdata \
 "
 
