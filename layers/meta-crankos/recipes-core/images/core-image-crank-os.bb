@@ -2,7 +2,7 @@ require include/core-image-crank-os.inc
 
 SUMMARY = "CrankOS Minimal Image"
 
-EXTRA_IMAGE_FEATURES = "package-management debug-tweaks tools-profile tools-debug"
+EXTRA_IMAGE_FEATURES = "debug-tweaks package-management tools-debug tools-profile"
 IMAGE_FEATURES:append = " x11 weston"
 
 IMAGE_INSTALL:append = " \
@@ -34,4 +34,3 @@ IMAGE_INSTALL:append = " \
     icu \
     tzdata \
 "
-

@@ -1,1 +1,1 @@
-PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-rt"
+PREFERRED_PROVIDER_virtual/kernel = "linux-raspberrypi"
